@@ -3,15 +3,15 @@ const btns = document.getElementsByTagName("button");
 let calcString = ""
 
 function convertToPostfix(infix) {
-    var output = "";
+    var output = [];
     var stack = [];
     for (var i = 0; i < infix.length; i++) {
-        var ch = infix.charAt(i);
-        if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+        var ch = infix[i];
+        if (ch === '+' || ch === '-' || ch === '*' || ch === '/') {
             while (stack.length != 0 && stack[stack.length - 1] != '(' &&
                 getPrecedence(ch) <= getPrecedence(stack[stack.length - 1])) {
-                output += stack.pop();
-                output += ' ';
+                output.push(stack.pop());
+
             }
             stack.push(ch);
         }
@@ -20,17 +20,17 @@ function convertToPostfix(infix) {
         }
         else if (ch == ')') {
             while (stack.length != 0 && stack[stack.length - 1] != '(') {
-                output += stackHTML.pop();
-                output += ' ';
+                output.push(stackHTML.pop());
+
             }
             stack.pop();
         } else {
-            output += ch;
+            output.push(ch);
         }
     }
     while (stack.length != 0) {
-        output += stack.pop();
-        output += ' ';
+        output.push(stack.pop());
+
     }
     return output;
 }
@@ -46,7 +46,7 @@ function getPrecedence(ch) {
 }
 function postfixEval(postfixArray) {
     var stack = [];
-    // console.log(postfixArray)
+
     for (element of postfixArray) {
 
 
@@ -70,8 +70,6 @@ function postfixEval(postfixArray) {
             stack.push(parseFloat(element));
         }
     }
-    //    console.log(`Final length of stack is: ${stack.length}`)
-    //    console.log(`The stack is:${stack}`);
     if (isNaN(stack[0])) {
         return "Syntax Error"
     }
@@ -79,11 +77,25 @@ function postfixEval(postfixArray) {
         return stack[0];
     }
 }
+function alternateParse(expression) {
+
+    let copy = expression;
+
+    expression = expression.replace(/[0-9]+/g, "#").replace(/[\(|\|\.)]/g, "");
+    let numbers = copy.split(/[^0-9\.]+/);
+    let operators = expression.split("#").filter(function (n) { return n });
+    let result = [];
+
+    for (i = 0; i < numbers.length; i++) {
+        result.push(numbers[i]);
+        if (i < operators.length) result.push(operators[i]);
+    }
+    return result
+}
 for (let i = 0; i < btns.length; i++) {
     btns[i].addEventListener("click", function (event) {
         if (event.target.name !== "AC" && event.target.name !== "=") {
             calcString += event.target.value;
-            console.log(calcString);
             document.getElementsByTagName("span")[0].innerText = calcString
         }
         else if (event.target.name === "AC") {
@@ -91,10 +103,9 @@ for (let i = 0; i < btns.length; i++) {
             document.getElementsByTagName("span")[0].innerText = calcString
         }
         else {
-            let postfixArray = convertToPostfix(calcString).split("").filter(char => char !== " ");
-            console.log(postfixArray);
-
-            let ans = postfixEval(postfixArray);
+            console.log(alternateParse(calcString));
+            let ans = postfixEval(convertToPostfix(alternateParse(calcString)));
+            ans = Number.isInteger(ans) ? ans : Number.parseFloat(ans).toFixed(4);
             calcString = ans;
             document.getElementsByTagName("span")[0].innerText = calcString
 
