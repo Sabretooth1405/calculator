@@ -77,6 +77,7 @@ function postfixEval(postfixArray) {
         return stack[0];
     }
 }
+//Function which breaks an infix expression into it induvivual elements eg. 7.2*23-8 into ['7.2','*','23','-','8']
 function alternateParse(expression) {
 
     let copy = expression;
